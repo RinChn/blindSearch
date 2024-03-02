@@ -1,3 +1,5 @@
+import os
+
 from ComponOfTree.node import Node
 from ComponOfTree.tree import get_initial_state
 from time import process_time
@@ -13,6 +15,7 @@ def dfs():
     result_node = None  # Переменная для хранения результата
     iterations = 0  # Счетчик итераций
 
+    print("\nИщем решение...")
     START_TIME = process_time()
     while stack:
         current_node = stack.pop()
@@ -34,6 +37,7 @@ def dfs():
             new_state = new_states_dict[new_action]
             new_node = Node(new_state, current_node, new_action, current_node.path_cost + 1, current_node.depth + 1)
             stack.append(new_node)
+
 
     if result_node is not None:
         print("Решение найдено!")

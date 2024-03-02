@@ -1,14 +1,15 @@
-import os
-
 from ComponOfTree.node import Node
 from ComponOfTree.tree import get_initial_state
 from time import process_time
 
-from basic_operations import print_info, check_final, state_hash, get_new_states
+from basic_operations import print_info, check_final, state_hash, get_followers
 
 
 def dfs():
-    ''' Поиск в глубину без ограничения глубины '''
+    """
+    Поиск сначала в глубину.
+    """
+
     start_node = Node(get_initial_state(), None, None, 0, 0)
     visited_states = set()  # Множество посещенных состояний
     stack = [start_node]  # Стек для хранения узлов
@@ -31,17 +32,16 @@ def dfs():
 
         visited_states.add(state_hash_value)  # Добавляем текущее состояние в множество посещенных состояний
 
-        new_states_dict = get_new_states(current_node.current_state)
+        new_states_dict = get_followers(current_node.current_state)
 
         for new_action in new_states_dict:
             new_state = new_states_dict[new_action]
             new_node = Node(new_state, current_node, new_action, current_node.path_cost + 1, current_node.depth + 1)
             stack.append(new_node)
 
-
+    TIME_STOP = process_time()
     if result_node is not None:
         print("Решение найдено!")
-        TIME_STOP = process_time()
         print_info(iterations=iterations, time=TIME_STOP - START_TIME)
     else:
         print("Решение не найдено.")

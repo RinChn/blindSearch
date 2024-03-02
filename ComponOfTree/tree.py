@@ -16,8 +16,7 @@ class Tree:
     }
 
     def __init__(self):
-        node = Node(get_initial_state(), None, None, 0, 0)
-        self.__nodes = {0: [node]}
+        self.__nodes = {0: [Node(get_initial_state(), None, None, 0, 0)]}
 
     def add_node(self, level: int, new_node: "Node"):
         ''' Добавить узел в дерево '''

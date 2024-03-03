@@ -1,59 +1,93 @@
 from time import process_time
 
-from ComponOfTree.node import Node
-from ComponOfTree.tree import get_initial_state
-from basic_operations import print_info, check_final, state_hash, get_followers
+from node import Node
+from basic_operations import get_initial_state, ACTIONS_MAP
+from basic_operations import print_info, check_final, state_hash, \
+    get_followers, print_node, print_state, MOVES, \
+    print_path
 
 
-def dls(depth_limit: int):
+def dls(depth_limit: int = None, DEBUG: bool = False):
     """
-    Ограниченный поиск в глубину.
-    :param depth_limit: Ограничение на глубину.
+    Поиск с ограничением в глубину.
+    :param depth_limit: ограничение
+    :param DEBUG: флаг на поэтапный вывод.
     """
-    start_node = Node(get_initial_state(), None, None, 0, 0)
+    # Выводим сообщение о начале алгоритма DLS
+    print("ПОИСК В ГЛУБИНУ С ОГРАНИЧЕНИЕМ DLS - Deep-Limited Search.")
+    start_node = Node(get_initial_state(), None, None, 0, 0)  # Начальный узел
     visited_states = set()  # Множество посещенных состояний
+    stack = [start_node]  # Стек для хранения узлов
+    result_node = None  # Переменная для хранения результата
+    iterations = 0  # Счетчик итераций
+
     START_TIME = process_time()
-    result_node, iterations = dls_iteration(start_node, depth_limit, visited_states, iteration_count=1)
+    # Основной цикл алгоритма
+    while stack:
+        current_node = stack.pop()  # Извлекаем текущий узел из стека
+        iterations += 1  # Увеличиваем счетчик итераций на 1
 
+        # Проверка на то, является ли состояние в узле финальным
+        if check_final(current_node.current_state):
+            result_node = current_node
+            break
+
+        # Преобразуем состояние в хэш-таблицу, проверяем, было ли оно посещено ранее
+        state_hash_value = state_hash(current_node.current_state)
+        if state_hash_value in visited_states:
+            continue
+
+        visited_states.add(state_hash_value)
+        new_states_dict = get_followers(current_node.current_state)
+
+        # Вывод информации о текущем узле и его потомках, если установлен режим отладки
+        if DEBUG:
+            print(f"----------------Шаг: {iterations}.---------------- \n")
+            print("Текущий узел:", end=' ')
+            if iterations == 1:
+                print("Корень дерева")
+            print_node(current_node)
+            print("Потомки:")
+            for child_action, child_state in new_states_dict.items():
+                child_hash_value = state_hash(child_state)
+                if child_hash_value not in visited_states:
+                    # Создаем новый узел для потомка и добавляем его в стек
+                    child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1,
+                                      current_node.depth + 1)
+                    print_node(child_node)
+                    stack.append(child_node)  # Добавляем потомка в стек
+                else:
+                    # Если потомок уже был посещен, выводим информацию о нем
+                    print("Повторное состояние:")
+                    print(f"Action = {ACTIONS_MAP[child_action]}, \nDepth = {current_node.depth + 1}, " +
+                          f"Cost = {current_node.path_cost + 1}, \nState: ")
+                    print_state(child_state)
+
+            input("Нажмите 'Enter' для продолжения...")
+        else:
+            # Добавление всех потомков текущего узла в стек
+            stack.extend(
+                Node(child_state, current_node, child_action, current_node.path_cost + 1, current_node.depth + 1)
+                for child_action, child_state in new_states_dict.items()
+                if state_hash(child_state) not in visited_states
+            )
+
+        # Если установлено ограничение глубины и текущая глубина превышает лимит, прекратить поиск
+        if depth_limit is not None and current_node.depth >= depth_limit:
+            print("\nДостигнуто ограничение глубины.")
+            break
+
+    # Вывод результатов алгоритма
     if result_node is not None:
-        print("Решение найдено!")
+        print("\nКонечное состояние достигнуто!")
+        print_path(result_node)
         TIME_STOP = process_time()
-        print_info(iterations=iterations, time=TIME_STOP - START_TIME)
+        # Вызов функции для вывода информации о поиске
+        print_info(iterations=iterations, time=TIME_STOP - START_TIME, visited_states=len(visited_states),
+                   path_cost=result_node.path_cost)
     else:
-        print("Решение не найдено.")
+        print("\nПуть к конечному состоянию не найден.")
 
-
-def dls_iteration(node: Node, depth_limit: int, visited_states: set, iteration_count: int):
-    """
-    Итерация ограниченного поиска в глубину.
-    :param node: Текущий узел дерева решения.
-    :param depth_limit: Ограничение для поиска.
-    :param visited_states: Множество посещённых состояний.
-    :param iteration_count: Количество прошедших операций на момент вызова функции.
-    :return: Узел конечного состояния и количество операций.
-    """
-    # Проверка на то, достигнуто ли ограничение.
-    if node.depth > depth_limit:
-        return None, iteration_count
-
-    # Проверка на то, хранится ли в текущем узле финальное состояние
-    if check_final(node.current_state):
-        return node, iteration_count
-
-    # Проверка, является ли состояние посещённым
-    state_hash_value = state_hash(node.current_state)
-    if state_hash_value in visited_states:
-        return None, iteration_count
-
-    visited_states.add(state_hash_value)  # Добавление текущего состояния в множество посещенных состояний
-
-    # Получение последователей и создание узлов для последователей
-    followers = get_followers(node.current_state)
-    for action, state in followers.items():
-        node_child = Node(state, node, action, node.path_cost + 1, node.depth + 1)
-        result, iteration_count = dls_iteration(node_child, depth_limit, visited_states, iteration_count + 1)
-        # Для поиска последующих потомков.
-        if result is not None:
-            return result, iteration_count
-
-    return None, iteration_count + 1  # Не удалось найти решение
+    # Проверяем, было ли найдено хотя бы одно состояние
+    if not visited_states:
+        print("\nВсе состояния были исследованы, но решение не было найдено.")

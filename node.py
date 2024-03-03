@@ -7,6 +7,7 @@ class Node:
     previous_action: tuple = None  # Действие, применённое к родительскому узлу для получения текущего узла
     path_cost: int = 0  # Стоимость пути от начального узла к данному
     depth: int = 0  # Глубина узла
+    node_id: int = 0
 
     nodes_count = 0  # Общее количество представителей класса
 
@@ -24,6 +25,7 @@ class Node:
         self.previous_action = action
         self.path_cost = cost
         self.depth = depth
+        self.node_id = Node.nodes_count
         Node.nodes_count += 1
 
     @classmethod

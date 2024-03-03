@@ -1,61 +1,86 @@
-from ComponOfTree.node import Node
-from ComponOfTree.tree import get_initial_state
+from node import Node
+from basic_operations import get_initial_state, ACTIONS_MAP
 from time import process_time
 
-from basic_operations import print_info, check_final, state_hash, get_followers
+from basic_operations import print_info, check_final, state_hash, \
+    get_followers, print_state, print_node, print_path, MOVES
 
 
-def dfs():
+def dfs(DEBUG: bool = False):
     """
-    Поиск сначала в глубину.
+    Поиск в глубину.
+    :param DEBUG: Флаг на поэтапный вывод.
     """
 
-    start_node = Node(get_initial_state(), None, None, 0, 0)
-    visited_states = set()  # Множество посещенных состояний
-    stack = [start_node]  # Стек для хранения узлов
+    print("ПОИСК В ГЛУБИНУ DFS - Deep-First Search.")
+
+    start_node = Node(get_initial_state(), None, None, 0, 0)  # Начальный узел
+    visited_states = set()  # Множество для хранения посещенных состояний
+    stack = [start_node]  # Стек для хранения узлов, которые нужно посетить
     result_node = None  # Переменная для хранения результата
     iterations = 0  # Счетчик итераций
 
-    print("\nИщем решение...")
     START_TIME = process_time()
+
     while stack:
         current_node = stack.pop()
         iterations += 1
 
+        # Проверяем, достигнуто ли конечное состояние
         if check_final(current_node.current_state):
             result_node = current_node
             break
 
+        # Преобразуем состояние в хэш-таблицу, проверяем, было ли оно посещено ранее
         state_hash_value = state_hash(current_node.current_state)
         if state_hash_value in visited_states:
-            continue  # Пропускаем уже посещенные состояния
+            continue
 
-        visited_states.add(state_hash_value)  # Добавляем текущее состояние в множество посещенных состояний
-
+        visited_states.add(state_hash_value)
         new_states_dict = get_followers(current_node.current_state)
 
-        for new_action in new_states_dict:
-            new_state = new_states_dict[new_action]
-            new_node = Node(new_state, current_node, new_action, current_node.path_cost + 1, current_node.depth + 1)
-            stack.append(new_node)
+        # Отладочный вывод текущего узла и его потомков
+        if DEBUG:
+            print(f"----------------Шаг: {iterations}.---------------- \n")
+            print("Текущий узел:", end=' ')
+            if iterations == 1:
+                print("Корень дерева")
+            print_node(current_node)
+            print("Потомки:")
+            for child_action, child_state in new_states_dict.items():
+                child_hash_value = state_hash(child_state)
+                if child_hash_value not in visited_states:
+                    # Создаем новый узел для каждого дочернего состояния
+                    child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1,
+                                      current_node.depth + 1)
+                    print_node(child_node)  # Вывод информации о новом узле
+                    stack.append(child_node)  # Добавление нового узла в стек для дальнейшего исследования
+                else:
+                    # Выводим сообщение о повторном состоянии
+                    print("Повторное состояние:")
+                    print(f"Action = {ACTIONS_MAP[child_action]}, \nDepth = {current_node.depth + 1}, " +
+                          f"Cost = {current_node.path_cost + 1}, \nState: ")
+                    print_state(child_state)
 
-    TIME_STOP = process_time()
+            input("Нажмите 'Enter' для продолжения...")
+        else:
+            # Добавление всех потомков текущего узла в стек
+            stack.extend(
+                Node(child_state, current_node, child_action, current_node.path_cost + 1, current_node.depth + 1)
+                for child_action, child_state in new_states_dict.items()
+                if state_hash(child_state) not in visited_states
+            )
+
+    # Проверяем, было ли найдено конечное состояние
     if result_node is not None:
-        print("Решение найдено!")
-        print_info(iterations=iterations, time=TIME_STOP - START_TIME)
+        print("\n---Конечное состояние достигнуто!---")
+        print_path(result_node)  # Выводим путь к достижению конечного состояния
+        TIME_STOP = process_time()
+        print_info(iterations=iterations, time=TIME_STOP - START_TIME, visited_states=len(visited_states),
+                   path_cost=result_node.path_cost)
     else:
-        print("Решение не найдено.")
-
-    # Выводим информацию о процессе поиска
-    print("Процесс поиска:")
-    print(f"Пройдено состояний: {len(visited_states)}")
-    print(f"Итераций: {iterations}")
-    print_info(iterations=iterations, time=TIME_STOP - START_TIME)
+        print("\nПуть к конечному состоянию не найден.")
 
     # Проверяем, было ли найдено хотя бы одно состояние
     if not visited_states:
-        print("Все состояния были исследованы, но решение не было найдено.")
-
-
-
-
+        print("\nВсе состояния были исследованы, но решение не было найдено.")

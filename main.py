@@ -9,6 +9,7 @@ if __name__ == '__main__':
                      headers=["№", "Стратегия"],
                      tablefmt="grid")
                  + '\n> ')
+    debug_flag = bool(lambda x=input("\nРежим поэтапного вывода (Y/N):\n> "): (True if x == 'Y' else False))
 
     match mode:
         case '1':

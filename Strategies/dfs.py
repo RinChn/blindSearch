@@ -1,9 +1,8 @@
 from node import Node
-from basic_operations import get_initial_state, ACTIONS_MAP
 from time import process_time
 
 from basic_operations import print_info, check_final, state_hash, \
-    get_followers, print_state, print_node, print_path, MOVES
+    get_followers, print_state, print_node, print_path, MOVES, get_initial_state
 
 
 def dfs(DEBUG: bool = False):
@@ -58,7 +57,8 @@ def dfs(DEBUG: bool = False):
                 else:
                     # Выводим сообщение о повторном состоянии
                     print("Повторное состояние:")
-                    print(f"Action = {ACTIONS_MAP[child_action]}, \nDepth = {current_node.depth + 1}, " +
+                    print(f"Action = {MOVES.keys()[MOVES.values().index(child_action)] }, "
+                          f"\nDepth = {current_node.depth + 1}, " +
                           f"Cost = {current_node.path_cost + 1}, \nState: ")
                     print_state(child_state)
 

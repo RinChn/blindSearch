@@ -11,13 +11,6 @@ MOVES = {
     "RIGHT": (0, 1)
 }
 
-ACTIONS_MAP = {
-        (0, 1): "right",
-        (0, -1): "left",
-        (-1, 0): "up",
-        (1, 0): "down"
-}
-
 
 def get_initial_state() -> list:
     """
@@ -76,7 +69,7 @@ def print_node(node: "Node"):
     node_prev_action = None
 
     if node.previous_action:
-        node_prev_action = ACTIONS_MAP[node.previous_action]
+        node_prev_action = MOVES.keys()[MOVES.values().index(node.previous_action)]
     print(f"ID = {node.node_id}, ParentID = {parent_id}, " +
           f"Action = {node_prev_action}, \nDepth = {node.depth}, " +
           f"Cost = {node.path_cost}, \nState: ")

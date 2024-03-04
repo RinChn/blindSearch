@@ -1,10 +1,9 @@
 from time import process_time
 
 from node import Node
-from basic_operations import get_initial_state, ACTIONS_MAP
 from basic_operations import print_info, check_final, state_hash, \
     get_followers, print_node, print_state, MOVES, \
-    print_path
+    print_path, get_initial_state
 
 
 def dls(depth_limit: int = None, DEBUG: bool = False):
@@ -59,7 +58,7 @@ def dls(depth_limit: int = None, DEBUG: bool = False):
                 else:
                     # Если потомок уже был посещен, выводим информацию о нем
                     print("Повторное состояние:")
-                    print(f"Action = {ACTIONS_MAP[child_action]}, \nDepth = {current_node.depth + 1}, " +
+                    print(f"Action = {MOVES.keys()[MOVES.values().index(child_action)]}, \nDepth = {current_node.depth + 1}, " +
                           f"Cost = {current_node.path_cost + 1}, \nState: ")
                     print_state(child_state)
 

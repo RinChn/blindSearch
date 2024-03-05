@@ -1,3 +1,4 @@
+from main import debug_flag
 from node import Node
 from time import process_time
 
@@ -5,10 +6,9 @@ from basic_operations import print_info, check_final, state_hash, \
     get_followers, print_state, print_node, print_path, MOVES, get_initial_state
 
 
-def dfs(DEBUG: bool = False):
+def dfs():
     """
     Поиск в глубину.
-    :param DEBUG: Флаг на поэтапный вывод.
     """
 
     print("ПОИСК В ГЛУБИНУ DFS - Deep-First Search.")
@@ -39,7 +39,7 @@ def dfs(DEBUG: bool = False):
         new_states_dict = get_followers(current_node.current_state)
 
         # Отладочный вывод текущего узла и его потомков
-        if DEBUG:
+        if debug_flag:
             print(f"----------------Шаг: {iterations}.---------------- \n")
             print("Текущий узел:", end=' ')
             if iterations == 1:

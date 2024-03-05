@@ -4,7 +4,7 @@ class Node:
     """
     current_state: list = None  # Текущее состояние
     parent_node: "Node" = None  # Указатель на родительский узел
-    previous_action: tuple = None  # Действие, применённое к родительскому узлу для получения текущего узла
+    previous_action: str = None  # Действие, применённое к родительскому узлу для получения текущего узла
     path_cost: int = 0  # Стоимость пути от начального узла к данному
     depth: int = 0  # Глубина узла
     node_id: int = 0

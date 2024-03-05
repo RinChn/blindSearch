@@ -58,6 +58,12 @@ def print_path(node: "Node", isReversed=False):
         print("^\n:\n:\n_\n")
 
 
+def get_action_name(prev_action: tuple):
+    for key, value in MOVES.items():
+        if value == prev_action:
+            return key
+
+
 def print_node(node: "Node"):
     """
     Вывод информации об узле на экран.
@@ -69,7 +75,7 @@ def print_node(node: "Node"):
     node_prev_action = None
 
     if node.previous_action:
-        node_prev_action = MOVES.keys()[MOVES.values().index(node.previous_action)]
+        node_prev_action = get_action_name(node.previous_action)
     print(f"ID = {node.node_id}, ParentID = {parent_id}, " +
           f"Action = {node_prev_action}, \nDepth = {node.depth}, " +
           f"Cost = {node.path_cost}, \nState: ")
@@ -97,12 +103,12 @@ def check_final(current_state: list) -> bool:
 
 def state_swap(descendant: dict, current_state: list, move: tuple, pos_i: int, pos_j: int):
     """
-    Перемещение ячейки
-    :param descendant: словарь наследников
-    :param current_state: состояние-родитель
-    :param move: передвижение, совершаемое "пустой ячейкой"
-    :param pos_i: Координата пустой ячейки по оси Y
-    :param pos_j: Координата пустой ячейки по оси X
+    Перемещение ячейки.
+    :param descendant: Словарь наследников.
+    :param current_state: Состояние-родитель.
+    :param move: Передвижение, совершаемое "пустой ячейкой".
+    :param pos_i: Координата пустой ячейки по оси Y.
+    :param pos_j: Координата пустой ячейки по оси X.
     """
     new_state = [row[:] for row in current_state]
     new_pos_i = pos_i + move[0]
@@ -116,9 +122,9 @@ def state_swap(descendant: dict, current_state: list, move: tuple, pos_i: int, p
 
 def get_empty_cell(state: list):
     """
-    Получение координат пустой ячейки
-    :param state: Состояние для поиска
-    :return: Координаты пустой ячейки
+    Получение координат пустой ячейки.
+    :param state: Состояние для поиска.
+    :return: Координаты пустой ячейки.
     """
     pos_i, pos_j = None, None
     for i in range(3):
@@ -144,12 +150,11 @@ def get_followers(current_state: list) -> dict[tuple, list[Node]]:
 
 def print_info(iterations: int, time: float, visited_states: int, path_cost: int):
     """
-
-    :param iterations:
-    :param time:
-    :param visited_states:
-    :param path_cost:
-    :return:
+    Вывод информации о результате поиска.
+    :param iterations: Количество итераций в поиске.
+    :param time: Время, за которое был произведен поиск.
+    :param visited_states: Количество посещенных состояний во время поиска.
+    :param path_cost: Стоимость пройденного пути.
     """
     print(f"\nКоличество УЗЛОВ в дереве: {Node.get_nodes_count()}")
     print(f"Количество ИТЕРАЦИЙ в поиске: {iterations}")
@@ -161,7 +166,7 @@ def print_info(iterations: int, time: float, visited_states: int, path_cost: int
 
 def state_hash(state: list) -> int:
     """
-    Хэширование состояния.
+    Хеширование состояния.
     :param state: Состояние.
     :return: Хэш-таблица состояния.
     """

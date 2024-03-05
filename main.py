@@ -1,22 +1,23 @@
 from tabulate import tabulate
 
-from Strategies.dfs import dfs
-from Strategies.dls import dls
+from search_strategies import dfs
+
 
 if __name__ == '__main__':
+
     mode = input(tabulate(
                      [["1", "DFS"], ["2", "DLS"], ["3", "Вывести\nсправку"]],
                      headers=["№", "Стратегия"],
                      tablefmt="grid")
                  + '\n> ')
     debug_flag = bool(lambda x=input("\nРежим поэтапного вывода (Y/N):\n> "): (True if x == 'Y' else False))
-
+    print(debug_flag)
     match mode:
         case '1':
-            dfs()
+            dfs(debug_flag)
         case '2':
             depth_limit = int(input("Введите ограничение на глубину:\n> "))
-            dls(depth_limit)
+            dfs(debug_flag, depth_limit)
         case '3':
             print(tabulate(
                      [["DFS",

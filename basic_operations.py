@@ -69,17 +69,18 @@ def print_node(node: "Node"):
     Вывод информации об узле на экран.
     :param node: Узел, информация о котором выводится.
     """
-    parent_id = 0
-    if node.parent_node:
+    parent_id: int = 0
+    if(node.parent_node):
         parent_id = node.parent_node.node_id
-    node_prev_action = None
-
-    if node.previous_action:
-        node_prev_action = get_action_name(node.previous_action)
+    node_prev_action: str = None
+    if(node.previous_action):
+        node_prev_action = ACTIONS_MAP[node.previous_action]
     print(f"ID = {node.node_id}, ParentID = {parent_id}, " +
-          f"Action = {node_prev_action}, \nDepth = {node.depth}, " +
-          f"Cost = {node.path_cost}, \nState: ")
+        f"Action = {node_prev_action}, \nDepth = {node.depth}, " +
+        f"Cost = {node.path_cost}, \nState: ")
     print_state(node.current_state)
+    if is_duplicate:
+        print("Повторное состояние")
     print("")
 
 

@@ -78,10 +78,10 @@ def dls(current_node: "Node", visited_states: set,
 
     # Если установлено ограничение глубины и текущая глубина превышает лимит, выводим сообщение и прекращаем поиск
     if depth_limit is not None and current_node.depth >= depth_limit:
-        if not dls_recursive_with_stack.limit_reached:
+        if not dls.limit_reached:
             print("\nДостигнуто ограничение глубины!")
             stack.clear() # Очищаем очередь
-            dls_recursive_with_stack.limit_reached = True # Меняем флаг достижения глубины
+            dls.limit_reached = True # Меняем флаг достижения глубины
         return None, iterations
 
     # Получаем новые состояния из текущего узла
@@ -121,3 +121,6 @@ def dls(current_node: "Node", visited_states: set,
             return result_node, iterations
 
     return None, iterations
+            
+# Инициализация переменной для отслеживания достижения ограничения глубины            
+dls.limit_reached = False

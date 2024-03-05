@@ -60,7 +60,7 @@ def dls(current_node: "Node", visited_states: set,
     :param depth_limit: Ограничение в глубину для поиска с ограничением.
     :return: Найденное конечное состояние и затраченное для этого количество итераций.
     """
-    iterations += 1  # Увеличиваем счетчик итераций
+   iterations += 1  # Увеличиваем счетчик итераций
 
     # Проверяем, достигнуто ли конечное состояние
     if check_final(current_node.current_state):
@@ -78,21 +78,20 @@ def dls(current_node: "Node", visited_states: set,
 
     # Если установлено ограничение глубины и текущая глубина превышает лимит, выводим сообщение и прекращаем поиск
     if depth_limit is not None and current_node.depth >= depth_limit:
-        if not dls.limit_reached:
+        if not dls_recursive_with_stack.limit_reached:
             print("\nДостигнуто ограничение глубины!")
-            dls.limit_reached = True
+            dls_recursive_with_stack.limit_reached = True
         return None, iterations
 
     # Получаем новые состояния из текущего узла
-    new_states_dict = get_followers(current_node.current_state)
+    new_states_dict = get_new_states(current_node.current_state)
 
     # Рекурсивно исследуем каждого потомка
     for child_action, child_state in new_states_dict.items():
         child_hash_value = state_hash(child_state)
         if child_hash_value not in visited_states:
             # Передаем действие в качестве атрибута при создании узла
-            child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1,
-                              current_node.depth + 1)
+            child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1, current_node.depth + 1)
             stack.append(child_node)
 
     # Отладочный вывод текущего узла и его потомков
@@ -103,16 +102,18 @@ def dls(current_node: "Node", visited_states: set,
             print("Корень дерева")
         print_node(current_node)
         print("Потомки:")
-        for child_node in stack:  # Итерируем по всем узлам в стеке
-            print_node(child_node)
-            # Печатаем действие текущего узла
-            print("Action:", get_action_name(child_node.previous_action))
+        for child_action, child_state in new_states_dict.items():  # Итерируем по всем новым состояниям
+            child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1, current_node.depth + 1)
+            if state_hash(child_state) in visited_states:
+                print_node(child_node, is_duplicate=True)
+            else:
+                print_node(child_node)
         input("Нажмите 'Enter' для продолжения...")
 
     # Обработка потомков
     while stack:
         next_node = stack.pop()
-        result_node, iterations = dls(next_node, visited_states, stack, iterations, depth_limit)
+        result_node, iterations = dls_recursive_with_stack(next_node, visited_states, stack, iterations, depth_limit)
         if result_node is not None:
             return result_node, iterations
 

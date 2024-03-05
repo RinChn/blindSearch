@@ -116,7 +116,7 @@ def dls(current_node: "Node", visited_states: set,
     # Обработка потомков
     while stack:
         next_node = stack.pop()
-        result_node, iterations = dls_recursive_with_stack(next_node, visited_states, stack, iterations, depth_limit)
+        result_node, iterations = dls(next_node, visited_states, stack, iterations, depth_limit)
         if result_node is not None:
             return result_node, iterations
 

@@ -1,14 +1,14 @@
 import os
+
 import psutil
 
 from node import Node
 
-
 MOVES = {
-    "UP": (-1, 0),
-    "DOWN": (1, 0),
-    "LEFT": (0, -1),
-    "RIGHT": (0, 1)
+    (-1, 0): "UP",
+    (1, 0): "DOWN",
+    (0, -1): "LEFT",
+    (0, 1): "RIGHT"
 }
 
 
@@ -17,10 +17,15 @@ def get_initial_state() -> list:
     Получение начального состояния.
     :return: Начальное состояние.
     """
+    # return [
+    #     [5, 6, 4],
+    #     [2, 3, 8],
+    #     [7, 1, 0]
+    # ]
     return [
         [5, 6, 4],
-        [2, 3, 8],
-        [7, 1, 0]
+        [2, 3, 0],
+        [7, 1, 8]
     ]
 
 
@@ -29,18 +34,22 @@ def get_finish_state() -> list:
     Получение конечного состояния.
     :return: Конечное состояние.
     """
+    # return [
+    #     [0, 1, 2],
+    #     [3, 4, 5],
+    #     [6, 7, 8]
+    # ]
     return [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8]
+        [5, 6, 4],
+        [2, 3, 8],
+        [7, 1, 0]
     ]
 
 
-def print_path(node: "Node", isReversed=False):
+def print_path(node: "Node"):
     """
     Вывод полного пути от начального до конечного состояния в консоль.
     :param node: Конечный узел выводимого пути.
-    :param isReversed: Флаг, необходимо ли выводить в обратную сторону.
     """
     path = []
     current_node = node
@@ -50,38 +59,33 @@ def print_path(node: "Node", isReversed=False):
         current_node = current_node.parent_node
     path.append(current_node)
 
-    if isReversed:
-        path = path[::-1]
-
-    for path_node in path:
+    for path_node in path[::-1]:
         print_node(path_node)
         print("^\n:\n:\n_\n")
 
 
-def get_action_name(prev_action: tuple):
-    for key, value in MOVES.items():
-        if value == prev_action:
-            return key
-
-
-def print_node(node: "Node"):
+def print_node(node: "Node", is_duplicate: bool = False):
     """
     Вывод информации об узле на экран.
+    :param is_duplicate: Является ли состояние в узле повторным.
     :param node: Узел, информация о котором выводится.
     """
-    parent_id: int = 0
-    if(node.parent_node):
+    parent_id = 0
+
+    if node.parent_node:
         parent_id = node.parent_node.node_id
-    node_prev_action: str = None
-    if(node.previous_action):
-        node_prev_action = ACTIONS_MAP[node.previous_action]
+
+    node_prev_action = None
+    if node.previous_action:
+        node_prev_action = MOVES[node.previous_action]
+
     print(f"ID = {node.node_id}, ParentID = {parent_id}, " +
-        f"Action = {node_prev_action}, \nDepth = {node.depth}, " +
-        f"Cost = {node.path_cost}, \nState: ")
+          f"Action = {node_prev_action}, \nDepth = {node.depth}, " +
+          f"Cost = {node.path_cost}, \nState: ")
     print_state(node.current_state)
     if is_duplicate:
         print("Повторное состояние")
-    print("")
+    print()
 
 
 def print_state(state: list):
@@ -121,19 +125,16 @@ def state_swap(descendant: dict, current_state: list, move: tuple, pos_i: int, p
         descendant[move] = new_state
 
 
-def get_empty_cell(state: list):
+def get_empty_cell(state: list) -> tuple[int, int]:
     """
     Получение координат пустой ячейки.
     :param state: Состояние для поиска.
     :return: Координаты пустой ячейки.
     """
-    pos_i, pos_j = None, None
     for i in range(3):
         for j in range(3):
             if state[i][j] == 0:
-                pos_i, pos_j = i, j
-                break
-    return pos_i, pos_j
+                return i, j
 
 
 def get_followers(current_state: list) -> dict[tuple, list[Node]]:
@@ -144,7 +145,7 @@ def get_followers(current_state: list) -> dict[tuple, list[Node]]:
     """
     new_states = {}
     pos_i, pos_j = get_empty_cell(current_state)
-    for action, move in MOVES.items():
+    for move, action in MOVES.items():
         state_swap(new_states, current_state, move, pos_i, pos_j)
     return new_states
 

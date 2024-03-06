@@ -4,10 +4,10 @@ class Node:
     """
     current_state: list = None  # Текущее состояние
     parent_node: "Node" = None  # Указатель на родительский узел
-    previous_action: str = None  # Действие, применённое к родительскому узлу для получения текущего узла
+    previous_action: tuple = None  # Действие, применённое к родительскому узлу для получения текущего узла
     path_cost: int = 0  # Стоимость пути от начального узла к данному
     depth: int = 0  # Глубина узла
-    node_id: int = 0
+    node_id: int = 0  # ID узла (его индекс в общем массиве узлов)
 
     nodes_count = 0  # Общее количество представителей класса
 
@@ -26,6 +26,7 @@ class Node:
         self.path_cost = cost
         self.depth = depth
         self.node_id = Node.nodes_count
+
         Node.nodes_count += 1
 
     @classmethod

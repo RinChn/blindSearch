@@ -35,4 +35,4 @@ class Node:
         Геттер количества узлов.
         :return: количество узлов.
         """
-        return cls.nodes_count + 1
+        return cls.nodes_count

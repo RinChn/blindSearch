@@ -3,11 +3,9 @@ from time import process_time
 
 from node import Node
 from basic_operations import print_info, check_final, state_hash, \
-    get_followers, print_node, print_path, get_initial_state
+    get_followers, print_state, print_node, print_path, get_initial_state, MOVES
 
-sys.setrecursionlimit(10000)  # Предел рекурсии
-DEBUG = False
-
+sys.setrecursionlimit(1000000)  # Предел рекурсии
 
 def dfs(debug_flag: int, depth_limit: int = None):
     """
@@ -25,15 +23,15 @@ def dfs(debug_flag: int, depth_limit: int = None):
         print("ПОИСК СНАЧАЛА В ГЛУБИНУ DFS — Depth-first Search.")
     start_node = Node(get_initial_state(), None, None, 0, 0)  # Начальный узел
     visited_states = set()  # Множество посещенных состояний
-    queue = [start_node]  # Очередь для хранения узлов
+    stack = [start_node]  # стек для хранения узлов
     result_node = None  # Переменная для хранения результата
     iterations = 0  # Счетчик итераций
     dls.limit_reached = False  # Ограничитель на рекурсию
 
     START_TIME = process_time()
     # Основной цикл алгоритма
-    while queue:
-        result_node, iterations = dls(queue.pop(0), visited_states, queue, iterations, depth_limit)
+    while stack:
+        result_node, iterations = dls(stack.pop(), visited_states, stack, iterations, depth_limit)
         if result_node is not None:
             break
 
@@ -52,12 +50,12 @@ def dfs(debug_flag: int, depth_limit: int = None):
 
 
 def dls(current_node: "Node", visited_states: set,
-        queue: list, iterations: int, depth_limit: int = None):
+        stack: list, iterations: int, depth_limit: int = None):
     """
     Рекурсивная часть алгоритма поиска в глубину.
     :param current_node: Текущий обрабатываемый узел.
     :param visited_states: Список посещённых состояний.
-    :param queue: Очередь узлов.
+    :param stack: Стек узлов .
     :param iterations: Количество прошедших итераций.
     :param depth_limit: Ограничение в глубину для поиска с ограничением.
     :return: Найденное конечное состояние и затраченное для этого количество итераций.
@@ -81,7 +79,7 @@ def dls(current_node: "Node", visited_states: set,
     if depth_limit is not None and current_node.depth >= depth_limit:
         if not dls.limit_reached:
             print("\nДостигнуто ограничение глубины!")
-            queue.clear()  # Очищаем очередь
+            stack.clear()  # Очищаем стек
             dls.limit_reached = True  # Меняем флаг достижения глубины
         return None, iterations
 
@@ -100,21 +98,21 @@ def dls(current_node: "Node", visited_states: set,
     for child_action, child_state in new_states_dict.items():
         # Хэшируем состояние и инициализируем как узел
         child_hash_value = state_hash(child_state)
-        child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1,
-                          current_node.depth + 1)
-
         if child_hash_value not in visited_states:
+            child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1,
+                          current_node.depth + 1)
             if DEBUG:
                 print_node(child_node)
-            queue.append(child_node)  # Помещаем узел в очередь
+            stack.append(child_node)  # Помещаем узел в стек
         elif DEBUG:
-            print_node(child_node, is_duplicate=True)
+            print(f"Повторное состояние: \nAction = {MOVES[child_action]}, \nState: ")
+            print_state(child_state)
     if DEBUG:
         input("Нажмите 'Enter' для продолжения...")
 
     # Рекурсивно переходим к обработке полученных потомков, удаляя их постепенно из очереди
-    while queue:
-        result_node, iterations = dls(queue.pop(0), visited_states, queue, iterations, depth_limit)
+    while stack:
+        result_node, iterations = dls(stack.pop(), visited_states, stack, iterations, depth_limit)
         if result_node is not None:
             return result_node, iterations
 

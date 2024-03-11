@@ -1,6 +1,6 @@
 from tabulate import tabulate
 
-from search_strategies import dfs
+from search_strategies import search
 
 
 if __name__ == '__main__':
@@ -15,11 +15,11 @@ if __name__ == '__main__':
         match mode:
             case '1':
                 debug_flag = input("\nРежим поэтапного вывода (Y/N):\n> ") == 'Y'
-                dfs(debug_flag)
+                search(debug_flag)
             case '2':
                 debug_flag = input("\nРежим поэтапного вывода (Y/N):\n> ") == 'Y'
                 depth_limit = int(input("Введите ограничение на глубину:\n> "))
-                dfs(debug_flag, depth_limit)
+                search(debug_flag, depth_limit)
             case '3':
                 print(tabulate(
                          [["DFS",

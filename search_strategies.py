@@ -6,8 +6,10 @@ from basic_operations import print_info, check_final, state_hash, \
     get_followers, print_state, print_node, print_path, get_initial_state, MOVES
 
 sys.setrecursionlimit(1000000)  # Предел рекурсии
+DEBUG = False
 
-def dfs(debug_flag: int, depth_limit: int = None):
+
+def search(debug_flag: int, depth_limit: int = None):
     """
     Поиск в глубину.
     :param debug_flag: Выбор пользователя относительно пошагового вывода поиска.
@@ -50,7 +52,7 @@ def dfs(debug_flag: int, depth_limit: int = None):
 
 
 def defining_sequences(current_node: "Node", visited_states: set,
-        stack: list, iterations: int, depth_limit: int = None):
+                       stack: list, iterations: int, depth_limit: int = None):
     """
     Рекурсивная часть алгоритма поиска в глубину.
     :param current_node: Текущий обрабатываемый узел.
@@ -100,7 +102,7 @@ def defining_sequences(current_node: "Node", visited_states: set,
         child_hash_value = state_hash(child_state)
         if child_hash_value not in visited_states:
             child_node = Node(child_state, current_node, child_action, current_node.path_cost + 1,
-                          current_node.depth + 1)
+                              current_node.depth + 1)
             if DEBUG:
                 print_node(child_node)
             stack.append(child_node)  # Помещаем узел в стек

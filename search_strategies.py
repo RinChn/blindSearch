@@ -47,9 +47,6 @@ def search(debug_flag: int, depth_limit: int = None):
     else:
         print("\nПуть к конечному состоянию не найден.")
 
-    if not visited_states:
-        print("\nВсе состояния были исследованы, но решение не было найдено.")
-
 
 def defining_sequences(current_node: "Node", visited_states: set,
                        stack: list, iterations: int, depth_limit: int = None):

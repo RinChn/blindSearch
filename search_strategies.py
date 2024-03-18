@@ -71,10 +71,6 @@ def defining_sequences(current_node: "Node", visited_states: set,
     # Хэшируем текущее состояние для проверки посещенных состояний
     state_hash_value = state_hash(current_node.current_state)
 
-    # Если состояние уже посещалось, пропускаем его
-    if state_hash_value in visited_states:
-        return None, iterations
-
     visited_states.add(state_hash_value)  # Добавляем текущее состояние в множество посещенных
 
     # Проверка для ограниченного по глубине поиска
